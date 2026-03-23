@@ -3,7 +3,9 @@ const ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icon.svg'
+  '/icon.svg',
+  'https://placehold.co/192x192/fdfcf0/1a1a1a/png?text=Chronos',
+  'https://placehold.co/512x512/fdfcf0/1a1a1a/png?text=Chronos'
 ];
 
 self.addEventListener('install', (event) => {
