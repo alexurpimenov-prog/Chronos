@@ -1,7 +1,7 @@
 {
-  "name": "Chronos Gazette",
+  "name": "Chronos",
   "short_name": "Chronos",
-  "description": "Historical Newspaper Calendar",
+  "description": "Элегантный минималистичный календарь.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -37,18 +37,18 @@
   ],
   "screenshots": [
     {
-      "src": "https://placehold.co/1080x1920/fdfcf0/1a1a1a/png?text=Chronos+Gazette+Mobile",
+      "src": "https://placehold.co/1080x1920/fdfcf0/1a1a1a/png?text=Chronos+Mobile",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Chronos Gazette on Mobile"
+      "label": "Chronos on Mobile"
     },
     {
-      "src": "https://placehold.co/1920x1080/fdfcf0/1a1a1a/png?text=Chronos+Gazette+Desktop",
+      "src": "https://placehold.co/1920x1080/fdfcf0/1a1a1a/png?text=Chronos+Desktop",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Chronos Gazette on Desktop"
+      "label": "Chronos on Desktop"
     }
   ]
 }
