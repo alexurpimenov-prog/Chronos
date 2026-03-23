@@ -4,8 +4,10 @@ const ASSETS = [
   '/index.html',
   '/manifest.json',
   '/icon.svg',
-  'https://placehold.co/192x192/fdfcf0/1a1a1a/png?text=Chronos',
-  'https://placehold.co/512x512/fdfcf0/1a1a1a/png?text=Chronos'
+  'https://placehold.co/192x192/ffffff/1a1a1a/png?text=Chr',
+  'https://placehold.co/512x512/ffffff/1a1a1a/png?text=Chr',
+  'https://placehold.co/1080x1920/fdfcf0/1a1a1a/png?text=Chronos+Gazette+Mobile',
+  'https://placehold.co/1920x1080/fdfcf0/1a1a1a/png?text=Chronos+Gazette+Desktop'
 ];
 
 self.addEventListener('install', (event) => {
