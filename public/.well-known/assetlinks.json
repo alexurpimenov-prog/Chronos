@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "com.alex.chronos",
-    "sha256_cert_fingerprints": ["4B:3B:A5:A8:49:97:D2:F6:53:22:2E:60:AE:82:EF:C9:7B:5D:A0:AA:20:62:7C:08:05:41:9B:DC:BB:94:2C:FB"]
+    "sha256_cert_fingerprints": ["BF:D8:68:EF:E2:23:B7:EE:B5:57:35:86:4F:03:74:A6:8D:A4:F0:50:69:AF:50:CB:66:1A:92:27:67:C5:7F:02"]
   }
 }]
