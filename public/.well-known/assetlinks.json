@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.alex.chronos",
+    "sha256_cert_fingerprints": ["4B:3B:A5:A8:49:97:D2:F6:53:22:2E:60:AE:82:EF:C9:7B:5D:A0:AA:20:62:7C:08:05:41:9B:DC:BB:94:2C:FB"]
+  }
+}]
