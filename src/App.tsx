@@ -9,6 +9,21 @@ import { Calendar as CalendarIcon, ArrowDown } from 'lucide-react';
 
 // --- Константы и Типы ---
 
+const EMOJIS = [
+  { char: '✈️', label: 'самолет' },
+  { char: '🚂', label: 'поезд' },
+  { char: '🏨', label: 'гостиница' },
+  { char: '💰', label: 'деньги' },
+  { char: '😊', label: 'радость' },
+  { char: '🏖️', label: 'отпуск' },
+  { char: '😂', label: 'смех' },
+  { char: '😍', label: 'любовь' },
+  { char: '😢', label: 'грусть' },
+  { char: '😡', label: 'злость' },
+  { char: '😎', label: 'круто' },
+  { char: '🤔', label: 'думаю' },
+];
+
 const MONTHS = [
   'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
@@ -92,8 +107,22 @@ const generateCalendarData = (numMonthsBefore: number, numMonthsAfter: number) =
 
 export default function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [dayEmojis, setDayEmojis] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('chronos-day-emojis');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [pickerOpen, setPickerOpen] = useState<{ dateKey: string; x: number; y: number } | null>(null);
+  const [deleteOption, setDeleteOption] = useState<string | null>(null); // dateKey
+  
+  const longPressTimer = useRef<any>(null);
+
   const { days, monthLabels } = useMemo(() => generateCalendarData(60, 60), []); // Reduced range for performance in single grid
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Persistence
+  React.useEffect(() => {
+    localStorage.setItem('chronos-day-emojis', JSON.stringify(dayEmojis));
+  }, [dayEmojis]);
 
   // Прокрутка к сегодняшнему дню при первой загрузке
   React.useEffect(() => {
@@ -132,6 +161,46 @@ export default function App() {
     if (todayElement) {
       todayElement.scrollIntoView({ block: 'center' });
     }
+  };
+
+  const handleLongPress = (dateKey: string, x: number, y: number) => {
+    if (dayEmojis[dateKey]) {
+      setDeleteOption(dateKey);
+    } else {
+      setPickerOpen({ dateKey, x, y });
+    }
+  };
+
+  const startPress = (dateKey: string, e: React.MouseEvent | React.TouchEvent) => {
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+
+    longPressTimer.current = setTimeout(() => {
+      handleLongPress(dateKey, clientX, clientY);
+    }, 600);
+  };
+
+  const endPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const selectEmoji = (emoji: string) => {
+    if (pickerOpen) {
+      setDayEmojis(prev => ({ ...prev, [pickerOpen.dateKey]: emoji }));
+      setPickerOpen(null);
+    }
+  };
+
+  const removeEmoji = (dateKey: string) => {
+    setDayEmojis(prev => {
+      const next = { ...prev };
+      delete next[dateKey];
+      return next;
+    });
+    setDeleteOption(null);
   };
 
   return (
@@ -211,12 +280,19 @@ export default function App() {
                 const selected = isSelected(year, month, day);
                 const isWeekend = col === 7 || col === 8;
                 const monthParity = month % 2 === 0;
+                const dateKey = `${year}-${month}-${day}`;
+                const emoji = dayEmojis[dateKey];
 
                 return (
                   <button
                     key={`${year}-${month}-${day}`}
                     id={today ? 'today-marker' : undefined}
                     onClick={() => setSelectedDate(new Date(year, month, day))}
+                    onMouseDown={(e) => startPress(dateKey, e)}
+                    onMouseUp={endPress}
+                    onMouseLeave={endPress}
+                    onTouchStart={(e) => startPress(dateKey, e)}
+                    onTouchEnd={endPress}
                     style={{ 
                       gridRow: row, 
                       gridColumn: col 
@@ -232,6 +308,28 @@ export default function App() {
                       {day}
                     </span>
                     
+                    {/* Emoji in top right corner */}
+                    {emoji && (
+                      <div className="absolute -top-1 -right-1 z-30 text-lg pointer-events-none drop-shadow-sm">
+                        {emoji}
+                      </div>
+                    )}
+
+                    {/* Delete cross overlay on long press */}
+                    {deleteOption === dateKey && (
+                      <div 
+                        className="absolute inset-0 z-40 bg-red-500/20 flex items-center justify-center backdrop-blur-[1px]"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeEmoji(dateKey);
+                        }}
+                      >
+                        <div className="bg-red-600 text-white rounded-full p-1 shadow-lg">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Ink dot for today */}
                     {today && (
                       <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#fdfcf0] rounded-full" />
@@ -248,6 +346,48 @@ export default function App() {
           </div>
         </div>
       </main>
+
+      {/* Emoji Picker Overlay */}
+      {pickerOpen && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/10 backdrop-blur-[2px]"
+          onClick={() => setPickerOpen(null)}
+        >
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-[#fdfcf0] border-2 border-black p-4 shadow-2xl max-w-[280px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="grid grid-cols-4 gap-3">
+              {EMOJIS.map((emoji) => (
+                <button
+                  key={emoji.char}
+                  onClick={() => selectEmoji(emoji.char)}
+                  className="text-3xl hover:bg-black/5 p-2 rounded transition-colors flex items-center justify-center"
+                  title={emoji.label}
+                >
+                  {emoji.char}
+                </button>
+              ))}
+            </div>
+            <button 
+              onClick={() => setPickerOpen(null)}
+              className="w-full mt-4 py-2 text-[10px] uppercase font-black tracking-widest border-t border-black/10 hover:bg-black/5"
+            >
+              Закрыть
+            </button>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Delete Option Global Click Handler */}
+      {deleteOption && (
+        <div 
+          className="fixed inset-0 z-[90]" 
+          onClick={() => setDeleteOption(null)}
+        />
+      )}
 
       {/* Bottom bar with Today button */}
       <div className="fixed bottom-0 left-0 right-0 h-8 bg-[#fdfcf0]/80 backdrop-blur-sm border-t border-black/20 flex items-center justify-end px-4 z-50">
